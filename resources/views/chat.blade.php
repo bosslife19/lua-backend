@@ -143,6 +143,8 @@ const client = supabase.createClient(supabaseUrl, supabaseKey);
     const sendForm = document.querySelector('form');
     sendForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+       
+        
         const input = document.getElementById('message');
         const content = input.value.trim();
         if (!content) return;
@@ -157,8 +159,24 @@ const client = supabase.createClient(supabaseUrl, supabaseKey);
                 
                 
             }]);
+            if (!error) input.value = '';
 
-        if (!error) input.value = '';
+    await fetch('http://localhost:8000/api/update-message', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json', // Tells the server you're sending JSON
+    'Accept': 'application/json'        // Optional: tells server you want JSON back
+  },
+  body: JSON.stringify({
+    userId: otherUserId,
+    message: content
+  })
+});
+
+          
+           
+
+       
     });
 </script>
 

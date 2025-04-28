@@ -31,14 +31,24 @@ public function getLatest(){
     $exercise = Exercise::latest()->first();
     return response()->json(['status'=>true, 'exercise'=>$exercise]);
 }
-    public function getWorkout($id){
-        $exercise = Exercise::find($id);
-        $exercise->video_url = asset('storage/' . $exercise->video_path);
-        $exercise->image = asset('storage/' . $exercise->thumbnail);
+public function getWorkout($id)
+{
+    $exercise = Exercise::findOrFail($id);
 
+    // Convert the thumbnail to full URL
+    $exercise->image = asset('storage/' . $exercise->thumbnail);
 
-        return response()->json(['status'=>true, 'exercise'=>$exercise]);
-    }
+    // Map each video to a full URL
+    $exercise->video_urls = collect($exercise->videos)->map(function ($videoPath) {
+        return asset('storage/' . $videoPath);
+    });
+
+    return response()->json([
+        'status' => true,
+        'exercise' => $exercise,
+    ]);
+}
+
 
     public function getSavedExercises(Request $request){
         $user = $request->user();

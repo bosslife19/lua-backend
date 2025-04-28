@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('fitness_level')->nullable();
             $table->string('fitness_goal')->nullable();
             $table->string('cycle_behaviour')->nullable();
+            $table->timestamp('menstrual_start')->nullable();
             $table->string('legal_name')->nullable();
             $table->string('preferred_name')->nullable();
             $table->integer('otp_code')->nullable();

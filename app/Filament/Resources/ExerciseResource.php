@@ -39,13 +39,14 @@ class ExerciseResource extends Resource
                 ->searchable()
                 ->placeholder('Leave empty to assign to everyone')
                 ->preload(),
-                FileUpload::make('video_path')
-            ->label('Workout Video')
-            ->directory('workouts')
-            ->acceptedFileTypes(['video/mp4', 'video/mov', 'video/webm'])
-            ->maxSize(51200) // ~50MB
-            ->required()
-            ->visibility('public'), // important for frontend access
+                FileUpload::make('videos')
+                ->label('Workout Videos')
+                ->directory('workouts')
+                ->acceptedFileTypes(['video/mp4', 'video/mov', 'video/webm'])
+                ->maxSize(51200) // ~50MB
+                ->multiple() // <-- IMPORTANT
+                ->required()
+                ->visibility('public'), // important for frontend access, // important for frontend access
             
             TextInput::make('duration')->placeholder('eg. 30 Minutes')->integer(),
             TextInput::make('equipments')->placeholder('e.g. Dumbbell, yoga mat'),
@@ -53,6 +54,7 @@ class ExerciseResource extends Resource
             MarkdownEditor::make('trainer_notes')->label("Your Trainer's notes"),
             TextInput::make('working_muscles')->nullable(),
             TextInput::make('supporting_muscles')->nullable(),
+            
             Select::make('level')->options(['Beginner', 'Intermediate', 'Advanced', 'Professional']),
             FileUpload::make('thumbnail')->label('Workout Image/Thumbnail')
             ->directory('thumbnails')

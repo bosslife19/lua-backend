@@ -160,28 +160,61 @@ public function getWorkoutChart(Request $request){
 public function checkDailyLog(Request $request)
 {
     $user = $request->user();
-  
-    $yesterday = now()->subDay()->toDateString();
 
-    $hasLoggedToday = WorkoutTimeLog::where('user_id', $user->id)
+    $yesterday = now()->subDay()->toDateString();
+    $today = now()->toDateString();
+
+    $hasLoggedYesterday = WorkoutTimeLog::where('user_id', $user->id)
         ->whereDate('created_at', $yesterday)
         ->exists();
 
-    if (!$hasLoggedToday) {
-        // Create the notification
-        Notification::create([
-            'user_id' => $user->id,
-            'type' => 'missed_workout',
-            'title' => "Missed workout alert",
-            'message' => "You missed yesterday's session. Let's get back on track today",
-            'read' => false,
-        ]);
+    if (!$hasLoggedYesterday) {
+        $alreadyNotified = Notification::whereDate('created_at', $today)
+            ->where('user_id', $user->id)
+            ->where('type', 'missed_workout')
+            ->first();
+
+        if (!$alreadyNotified) {
+            Notification::create([
+                'user_id' => $user->id,
+                'type' => 'missed_workout',
+                'title' => "Missed workout alert",
+                'message' => "You missed yesterday's session. Let's get back on track today",
+                'read' => false,
+            ]);
+        }
     }
 
     return response()->json([
         'status' => true,
-        'missed' => !$hasLoggedToday,
+        'missed' => !$hasLoggedYesterday,
     ]);
 }
+
+public function workoutRangeSummary(Request $request)
+{
+    $user = $request->user();
+    $start = Carbon::parse($request->start_date)->startOfDay();
+    $end = Carbon::parse($request->end_date)->endOfDay();
+
+    $logs = WorkoutTimeLog::where('user_id', $user->id)
+        ->whereBetween('created_at', [$start, $end])
+        ->get();
+
+    $totalHours = $logs->sum('duration'); // assuming `duration` is in hours or minutes
+    $uniqueDays = $logs->groupBy(function ($log) {
+        return $log->created_at->format('Y-m-d');
+    })->count();
+
+    return response()->json([
+        'status' => true,
+        'summary' => [
+            'total_hours' => $totalHours,
+            'total_days' => $uniqueDays,
+        ],
+    ]);
+}
+
+
 
 }

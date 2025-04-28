@@ -13,6 +13,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/register-email', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/update-message', [NotificationController::class, 'newMessageFromAdmin']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/register',[AuthController::class,'register']);
     Route::post('/register-user',[AuthController::class,'registerUser']);
@@ -30,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function(){
      Route::get('/get-unread-notifications', [NotificationController::class, 'getUnreadNotifications']);
      Route::get('/check-daily-log', [WorkoutTimeLogController::class,'checkDailyLog']);
      Route::post('/save-exercise', [ExerciseController::class, 'saveExercise']);
+
+     Route::post("/workout-range-summary", [WorkoutTimeLogController::class, 'workoutRangeSummary']);
+     
      Route::post('/mark-notifications-as-read', [NotificationController::class, 'markNotificationsAsRead']);
      Route::get('/get-monthly-exercise-count', [WorkoutTimeLogController::class, 'getMonthlyExerciseCount']);
     

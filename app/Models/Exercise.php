@@ -12,4 +12,13 @@ class Exercise extends Model
 {
     return $this->belongsToMany(User::class, 'exercise_user');
 }
+
+public function workouts()
+{
+    return $this->belongsToMany(Workout::class);
+}
+
+protected $casts = [
+    'videos'=>'array'
+];
 }

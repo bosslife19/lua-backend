@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendOtpMail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,12 +17,20 @@ class AuthController extends Controller
     public function register(Request $request){
         
         if($request->emailFirst){
-           $user =  User::create([
-                'email'=>$request->emailFirst
-            ]);
-            $token =  $user->createToken('main')->plainTextToken;
-            $this->sendOtp(($user->email));
-            return response()->json(['status'=>true, 'token'=>$token]);
+            try {
+                //code...
+                $user =  User::create([
+                    'email'=>$request->emailFirst
+                ]);
+                $token =  $user->createToken('main')->plainTextToken;
+                $this->sendOtp(($user->email));
+                return response()->json(['status'=>true, 'token'=>$token]);
+            } catch (\Throwable $th) {
+                //throw $th;
+                \Log::info($th->getMessage());
+                return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+            }
+           
         }
         $user = $request->user();
         if($request->password){
@@ -130,6 +139,13 @@ class AuthController extends Controller
        if($request->healthProv){
         $user->healthcare_provider = $request->healthProv;
         $user->save();
+       }
+       if($request->menstrualStart){
+
+        $user->menstrual_start = $request->menstrualStart;
+        $user->save();
+       
+
        }
        if($request->additionalHealthInfo){
         $user->additional_health_info = $request->additionalHealthInfo;
@@ -296,7 +312,15 @@ class AuthController extends Controller
         ]);
 
         // Send OTP via email
-        Mail::to($user->email)->send(new \App\Mail\SendOtpMail($otp));
+        try {
+            //code...
+            Mail::to($user->email)->send(new SendOtpMail($otp));
+        } catch (\Exception $e) {
+            //throw $th;
+            \Log::info($e);
+            \Log::info($e->getMessage());
+        }
+       
        
        
 
@@ -304,7 +328,8 @@ class AuthController extends Controller
     }
 
     public function verifyEmail(Request $request){
-        $request->validate(['otp'=>'required']);
+        try {
+            $request->validate(['otp'=>'required']);
 
         $user = $request->user();
         if ($user->otp_code == intval($request->otp)) {
@@ -315,8 +340,14 @@ class AuthController extends Controller
 
             return response()->json(['message' => 'OTP verified.', 'status'=>true]);
         } else {
-            return response()->json(['error' => 'Invalid or expired OTP.'], 422);
+            return response()->json(['error' => 'Invalid or expired OTP.']);
         }
+        } catch (\Exception $e) {
+            \Log::info($e);
+            \Log::info($e->getMessage());
+            return response()->json(['error'=>$e->getMessage()]);
+        }
+       
     }
 
     public function updateDetails(Request $request){

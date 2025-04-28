@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('working_muscles')->nullable();
             $table->string('supporting_muscles')->nullable();
             $table->string('level');
+           
             $table->boolean('saved')->default(false);
             $table->string("thumbnail");
 

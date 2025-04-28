@@ -21,7 +21,7 @@
         @endif
     </head>
     <body class="bg-gray-100 p-8">
-        <h1 class="text-3xl font-bold mb-6 text-center">User List</h1>
+        <h1 class="text-3xl font-bold mb-6 text-center">Users</h1>
     
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="user-grid">
             @foreach($users as $user)

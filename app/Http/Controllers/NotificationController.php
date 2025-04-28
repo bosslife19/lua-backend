@@ -36,4 +36,14 @@ class NotificationController extends Controller
     
         return response()->json(['status' => true]);
     }
+    public function newMessageFromAdmin(Request $request){
+      $userId = $request->userId;
+      Notification::create([
+        'title'=>'New Message from your trainer',
+        'type'=>'trainer_message',
+        'message'=>$request->message,
+        'user_id'=>$userId,
+      ]);
+      return response()->json(['status'=>true]);
+    }
 }
