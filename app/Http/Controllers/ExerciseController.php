@@ -31,23 +31,38 @@ public function getLatest(){
     $exercise = Exercise::latest()->first();
     return response()->json(['status'=>true, 'exercise'=>$exercise]);
 }
-public function getWorkout($id)
+public function getWorkoutByExercise($exerciseId)
 {
-    $exercise = Exercise::findOrFail($id);
+    $exercise = Exercise::with('workouts.exercises')->findOrFail($exerciseId);
 
-    // Convert the thumbnail to full URL
-    $exercise->image = asset('storage/' . $exercise->thumbnail);
+    // Get the first associated workout
+    $workout = $exercise->workouts->first();
 
-    // Map each video to a full URL
-    $exercise->video_urls = collect($exercise->videos)->map(function ($videoPath) {
-        return asset('storage/' . $videoPath);
+    if (!$workout) {
+        return response()->json([
+            'status' => false,
+            'message' => 'No workout associated with this exercise.'
+        ], 404);
+    }
+
+    // Map image and video URLs for each exercise in the workout
+    $workout->exercises->transform(function ($ex) {
+        $ex->image = $ex->thumbnail ? asset('storage/' . $ex->thumbnail) : null;
+        $ex->video_url = $ex->video ? asset('storage/' . $ex->video) : null;
+
+        // $ex->video_urls = collect($ex->videos ?? [])->map(function ($videoPath) {
+        //     return asset('storage/' . $videoPath);
+        // });
+
+        return $ex;
     });
 
     return response()->json([
         'status' => true,
-        'exercise' => $exercise,
+        'workout' => $workout,
     ]);
 }
+
 
 
     public function getSavedExercises(Request $request){

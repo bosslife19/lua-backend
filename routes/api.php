@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/register/questionnaire',[AuthController::class,'questionnaire']);
      Route::get('/all-exercises', [ExerciseController::class, 'getAllWorkouts']);
      Route::get('/saved-exercises', [ExerciseController::class, 'getSavedExercises']);
-     Route::get('/exercises/{id}', [ExerciseController::class, 'getWorkout']);
+     Route::get('/exercises/{id}', [ExerciseController::class, 'getWorkoutByExercise']);
      Route::post('/update-watch-time', [WorkoutTimeLogController::class, 'logTime']);
      Route::get('/get-weekly', [WorkoutTimeLogController::class, 'getWeeklyWorkoutLogs']);
      Route::get("/get-latest-exercise", [ExerciseController::class, 'getLatest']);

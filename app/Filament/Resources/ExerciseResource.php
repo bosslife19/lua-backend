@@ -39,12 +39,12 @@ class ExerciseResource extends Resource
                 ->searchable()
                 ->placeholder('Leave empty to assign to everyone')
                 ->preload(),
-                FileUpload::make('videos')
-                ->label('Workout Videos')
+                FileUpload::make('video')
+                ->label('Workout Video')
                 ->directory('workouts')
                 ->acceptedFileTypes(['video/mp4', 'video/mov', 'video/webm'])
                 ->maxSize(51200) // ~50MB
-                ->multiple() // <-- IMPORTANT
+                
                 ->required()
                 ->visibility('public'), // important for frontend access, // important for frontend access
             

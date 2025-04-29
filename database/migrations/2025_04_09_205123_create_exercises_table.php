@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('scheduled_for');
-            $table->string('video_path');
+            $table->string('video');
             $table->integer('duration');
             $table->string('equipments');
             $table->string('instructions');
