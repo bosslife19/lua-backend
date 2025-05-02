@@ -317,8 +317,7 @@ class AuthController extends Controller
             Mail::to($user->email)->send(new SendOtpMail($otp));
         } catch (\Exception $e) {
             //throw $th;
-            \Log::info($e);
-            \Log::info($e->getMessage());
+
         }
        
        
@@ -343,8 +342,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid or expired OTP.']);
         }
         } catch (\Exception $e) {
-            \Log::info($e);
-            \Log::info($e->getMessage());
+           
             return response()->json(['error'=>$e->getMessage()]);
         }
        
@@ -369,5 +367,69 @@ class AuthController extends Controller
         }
 
         return response()->json(['status'=>true, 'user'=>$user], 200);
+    }
+
+    public function sendResetPasswordCode(Request $request)
+    {
+        $request->validate(['email' => 'required']);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User does not exist!'], 200);
+        }
+
+        // Generate a 4-digit OTP
+        $otp = random_int(1000, 9999);
+
+        // Save OTP and its expiration time
+        $user->update([
+            'password_otp' => $otp,
+
+        ]);
+
+        // Send OTP via email
+        Mail::to($user->email)->send(new SendOtpMail($otp));
+
+        return response()->json(['message' => 'OTP sent to your email.']);
+    }
+
+    public function validatePasswordOtp(Request $request)    {
+        try {
+            //code...
+            $request->validate([
+                'email' => 'required|email|exists:users,email',
+                'otp_code' => 'required|digits:4',
+            ]);
+    
+            $user = User::where('email', $request->email)->first();
+    
+            // Check OTP validity
+    
+            if ($user->password_otp == intval($request->otp_code)) {
+                // OTP is valid
+    
+                $user->update(['password_otp' => null]);
+    
+    
+    
+                return response()->json(['message' => 'OTP verified.'], 200);
+            } else {
+                return response()->json(['message' => 'Invalid or expired OTP.'], 422);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error'=>$th->getMessage()]);
+        }
+
+       
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate(['password' => 'required']);
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return response()->json(['status' => true], 200);
     }
 }

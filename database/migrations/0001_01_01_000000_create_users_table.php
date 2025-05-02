@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('legal_name')->nullable();
             $table->string('preferred_name')->nullable();
             $table->integer('otp_code')->nullable();
+            $table->integer('password_otp')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
 
             $table->string('intentions')->nullable();

@@ -14,6 +14,9 @@ Route::get('/user', function (Request $request) {
 Route::post('/register-email', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/update-message', [NotificationController::class, 'newMessageFromAdmin']);
+Route::post('/user/request-reset-password', [AuthController::class, 'sendResetPasswordCode']);
+Route::post('/user/validate-password-otp', [AuthController::class, 'validatePasswordOtp']);
+Route::post('/user/change-password', [AuthController::class, 'changePassword']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/register',[AuthController::class,'register']);
     Route::post('/register-user',[AuthController::class,'registerUser']);
