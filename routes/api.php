@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WorkoutTimeLogController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,10 @@ Route::post('/update-message', [NotificationController::class, 'newMessageFromAd
 Route::post('/user/request-reset-password', [AuthController::class, 'sendResetPasswordCode']);
 Route::post('/user/validate-password-otp', [AuthController::class, 'validatePasswordOtp']);
 Route::post('/user/change-password', [AuthController::class, 'changePassword']);
+Route::post('/create-payment-intent', [StripeController::class, 'createIntent']);
+Route::post('/payment-sheet', [StripeController::class, 'createPaymentSheet']);
+Route::post('/update-payment-dates', [StripeController::class, 'updateDates']);
+
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/register',[AuthController::class,'register']);
     Route::post('/register-user',[AuthController::class,'registerUser']);

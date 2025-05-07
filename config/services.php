@@ -37,6 +37,10 @@ return [
     'supabase' => [
     'url' => env('SUPABASE_URL'),
     'anon_key' => env('SUPABASE_PUBLIC_ANON_KEY'),
-]
+    ],
+    'stripe' => [
+        'secret' => env('STRIPE_TEST_SECRET'),
+        'key'    => env('STRIPE_TEST_PUBLIC'),
+    ],
 
 ];
